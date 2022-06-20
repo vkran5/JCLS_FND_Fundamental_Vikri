@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Market</title>
+    <style>
+        table, td, th, tr{
+            position: relative;
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 1.5vw;
+        }
+    </style>
+</head>
+<body>
+    <div style="max-width: 75vw;">
+        <fieldset>
+            <legend><h2>Add Product</h2></legend>
+            <form id="addProduct">
+                <input type="text" placeholder="Product Name" id="product">
+                <input type="text" placeholder="Product Preview" id="preview">
+                <select id="category" onchange="dateHandler(this.value)">
+                    <option value="">Choose Category</option>
+                    <option value="General" >General</option>
+                    <option value="FnB" >FnB</option>
+                </select>
+                <input type="number" id="stock" placeholder="Stock">
+                <input type="number" id="price" placeholder="Price">
+                <input type="date" id="expDate" disabled>
+            </form>
+            <br>
+            <button onclick="addProduct()">Submit Product</button>
+        </fieldset>
+        <!-- Filter -->
+        <fieldset>
+            <legend><h2>Filter Product</h2></legend>
+            <form id="filteProduct">
+                <input type="text" placeholder="Product Name" id="product">
+                <input type="text" id="sku" placeholder="sku">
+                <input type="number" id="price" placeholder="Price">
+                <select id="category" onchange="dateHandler(this.value)">
+                    <option value="">Choose Category</option>
+                    <option value="General" >General</option>
+                    <option value="FnB" >FnB</option>
+                </select>
+            </form>
+            <br>
+            <button onclick="filterProduct()">Search Product</button>
+            <button onclick="PrintData(dbProduct)">Reset</button>
+        </fieldset>
+        <br>
+        <table>
+            <thead>
+                <th>No</th>
+                <th>SKU</th>
+                <th>Preview</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Stock</th>
+                <th>Price</th>
+                <th>Exp Date</th>
+                <th>Action</th>
+            </thead>
+
+            <tbody id="data-list">
+
+            </tbody>
+        </table>
+    </div>
+</body>
+<script src="index.js"></script>
+</html>
