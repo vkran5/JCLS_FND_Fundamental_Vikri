@@ -24,6 +24,8 @@ let dbProduct = [
 
 ];
 
+let dbCart = [];
+
 let getId = dbProduct.length == 0 ? 0 : dbProduct[dbProduct.length - 1].id;
 
 const dateHandler = (val) => {
@@ -78,11 +80,11 @@ const filterProduct = () => {
     let filterObj = new Object();
 
     Boolean(name) == true ? filterObj.name = name :
-    Boolean(sku) == true ? filterObj.sku = sku :
-    Boolean(price) == true ? filterObj.price = price :
-    Boolean(category) == true ? filterObj.category = category :
+        Boolean(sku) == true ? filterObj.sku = sku :
+            Boolean(price) == true ? filterObj.price = price :
+                Boolean(category) == true ? filterObj.category = category :
 
-    console.log(filterObj);
+                    console.log(filterObj);
 
     let result = [];
     dbProduct.forEach((val) => {
@@ -145,12 +147,12 @@ const PrintData = (array = dbProduct, sku) => {
             <tr>
                 <td>${idx + 1}</td>
                 <td>${val.sku}</td>
-                <td><img src="${val.preview}"  style="width: 150px;" id="editPreview"  value="${val.preview}"></td>
+                <td><img src="${val.preview}"  style="width: 150px;"></td>
                 <td><input type="text" id="editProduct" value="${val.name}" ></td>
-                <td id="editCategory" value='${val.category}'>${val.category}</td>
+                <td>${val.category}</td>
                 <td><input type="number" id="editStock" value="${val.stock}" ></td>
                 <td><input type="number" id="editPrice" value="${val.price}" ></td>
-                <td id ='editExpDate' value='${val.expDate}'>${val.expDate ? val.expDate : " "}</td>
+                <td>${val.expDate ? val.expDate : " "}</td>
                 <td id='${val.sku}'>
                     <button onclick="saveHandler('${val.sku}')">Save</button>
                     <button onclick="cancelHandler('${val.sku}')">Cancel</button>
@@ -170,11 +172,12 @@ const PrintData = (array = dbProduct, sku) => {
             <td id='button'>
                 <button value="delete" onclick="deleteData('${val.sku}')">Delete</button>
                 <button value="edit" onclick="editHandler('${val.sku}')">Edit</button>
+                <button value="edit" onclick="buyHandler('${val.sku}')">Buy</button>
             </td> 
             
         </tr>`
         }
-        
+
     }).join('');
 };
 
@@ -200,9 +203,9 @@ const saveHandler = (sku) => {
     let name = document.getElementById('editProduct').value;
     let stock = document.getElementById('editStock').value;
     let price = document.getElementById('editPrice').value;
-    let product = {name, stock, price};
+    let product = { name, stock, price };
 
-    dbProduct.forEach((val, idx) => {
+    dbProduct.forEach((val) => {
         if (val.sku == sku) {
             product.sku = val.sku;
             product.preview = val.preview;
@@ -215,8 +218,44 @@ const saveHandler = (sku) => {
     dbProduct[index] = product;
 
     PrintData(dbProduct);
-  
-    console.log(product);
 };
+
+
+const buyHandler = (sku) => {
+    dbProduct.forEach((val) => {
+        if (val.sku == sku) {
+            if (dbCart.includes(val)) {
+                val.qty ++;
+                val.stock -= 1;
+                
+            } else {
+                dbCart.push(val)
+                val.qty = 1;
+                val.stock -= 1;
+            }
+        }
+    });
+    printCart()
+    PrintData(dbProduct);
+};
+
+const printCart = () => {
+    document.getElementById('buy-list').innerHTML = dbCart.map((val, idx) => {
+        return `<tr>
+            <th>${idx + 1}</th>
+                <th>${val.sku}</th>
+                <th><img src="${val.preview}" style="width: 150px;"></th>
+                <th>${val.name}</th>
+                <th>${val.price}</th>
+                <th><button>-</button> ${val.qty} <button>+</button></th>
+                <th>${val.price * val.qty}</th>
+                <th>
+                    <button value="delete" onclick="deleteData('${val.sku}')">Delete</button>
+                </th>
+            </tr>`
+    }).join('')
+
+};
+
 
 PrintData(dbProduct)
