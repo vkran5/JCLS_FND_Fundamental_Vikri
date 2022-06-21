@@ -37,8 +37,8 @@
         <fieldset>
             <legend><h2>Filter Product</h2></legend>
             <form id="filteProduct">
+                <input type="text" id="sku" placeholder="SKU">
                 <input type="text" placeholder="Product Name" id="product">
-                <input type="text" id="sku" placeholder="sku">
                 <input type="number" id="price" placeholder="Price">
                 <select id="category" onchange="dateHandler(this.value)">
                     <option value="">Choose Category</option>
@@ -71,10 +71,13 @@
         <br>
         <!-- Cart -->
         <fieldset>
+            <button onclick="multipleDelete()">Multiple delete</button>
+            <br>
+            <br>
             <legend><h2>Cart List</h2></legend>
-            <table>
+            <table id="cart">
                 <thead>
-                    <th>No</th>
+                    <th>Select</th>
                     <th>SKU</th>
                     <th>Preview</th>
                     <th>Name</th>
@@ -84,7 +87,7 @@
                     <th>Action</th>
                 </thead>
 
-                <tbody id="buy-list">
+                <tbody id="cart-list">
 
                 </tbody>
     
@@ -92,7 +95,6 @@
     
                 </tbody>
             </table>
-            <button onclick="buyHandler()">Clear Cart</button>
         </fieldset>
 
     </div>

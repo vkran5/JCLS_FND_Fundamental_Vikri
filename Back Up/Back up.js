@@ -18,7 +18,7 @@ class FnB extends Product {
 };
 
 class Cart extends Product {
-    constructor(_sku, _preview, _name, _price, _qty) {
+    constructor(_sku,  _preview, _name, _price, _qty) {
         super(_sku, _preview, _name, null, null, _price)
         this.qty = _qty;
         this.subTotal = _price * _qty;
@@ -157,7 +157,7 @@ const PrintData = (array = dbProduct, sku) => {
             <tr>
                 <td>${idx + 1}</td>
                 <td>${val.sku}</td>
-                <td><img src="${val.preview}"  style="width: 80px;"></td>
+                <td><img src="${val.preview}"  style="width: 150px;"></td>
                 <td><input type="text" id="editProduct" value="${val.name}" ></td>
                 <td>${val.category}</td>
                 <td><input type="number" id="editStock" value="${val.stock}" ></td>
@@ -173,7 +173,7 @@ const PrintData = (array = dbProduct, sku) => {
             <tr id='${val.sku}'>
             <td>${idx + 1}</td>
             <td>${val.sku}</td>
-            <td><img src="${val.preview}" style="width: 80px;"></td>
+            <td><img src="${val.preview}" style="width: 150px;"></td>
             <td>${val.name}</td>
             <td>${val.category}</td>
             <td>${val.stock}</td>
@@ -211,7 +211,7 @@ const cancelHandler = () => {
 
 const saveHandler = (sku) => {
     let index = dbProduct.findIndex((val) => val.sku == sku);
-
+    
     let name = document.getElementById('editProduct').value;
     let stock = document.getElementById('editStock').value;
     let price = document.getElementById('editPrice').value;
@@ -219,23 +219,23 @@ const saveHandler = (sku) => {
     dbProduct[index].name = name;
     dbProduct[index].stock = stock;
     dbProduct[index].price = price;
-
+    
     PrintData(dbProduct);
 };
 
 
 const buyHandler = (sku) => {
-
+     
     let cartIndex = dbCart.findIndex((val) => val.sku == sku);
     let productIndex = dbProduct.findIndex((val) => val.sku == sku);
-
+     
     if (cartIndex >= 0) {
         dbCart[cartIndex].qty += 1;
         dbCart[cartIndex].subTotal = dbCart[cartIndex].qty * dbCart[cartIndex].price;
 
         dbProduct[productIndex].stock -= 1;
     } else {
-
+        
         dbCart.push(new Cart(dbProduct[productIndex].sku,
             dbProduct[productIndex].preview,
             dbProduct[productIndex].name,
@@ -250,11 +250,9 @@ const buyHandler = (sku) => {
 const printCart = () => {
     document.getElementById('cart-list').innerHTML = dbCart.map((val, idx) => {
         return `<tr>
-                <td>
-                    <input id="${val.name}" type="checkbox" value="${val.name}">
-                </td>
+                <td>${idx + 1}</td>
                 <td>${val.sku}</td>
-                <td><img src="${val.preview}" style="width: 80px;"></td>
+                <td><img src="${val.preview}" style="width: 150px;"></td>
                 <td>${val.name}</td>
                 <td>Rp.${parseInt(val.price).toLocaleString('id')},-</td>
                 <td><button id='${val.sku}' onclick="decrement('${val.sku}')">-</button> ${val.qty} <button onclick="increment('${val.sku}')">+</button></td>
@@ -270,7 +268,7 @@ const deleteCart = (sku) => {
     let cartIndex = dbCart.findIndex(val => val.sku == sku);
     let productIndex = dbProduct.findIndex(val => val.sku == sku);
 
-    dbProduct[productIndex].stock += dbCart[cartIndex].qty
+    dbProduct[productIndex].stock += dbCart[cartIndex].qty 
     dbCart.splice(cartIndex, 1)
 
     PrintData(dbProduct)
@@ -282,41 +280,63 @@ const decrement = (sku) => {
     let productIndex = dbProduct.findIndex(val => val.sku == sku);
 
     dbCart[cartIndex].qty -= 1;
-    dbProduct[productIndex].stock += 1;
-    dbCart[cartIndex].qty == '0' ? dbCart.splice(cartIndex, 1) : dbProduct;
-
-    printCart();
-    PrintData(dbProduct);
-};
-
-const increment = (sku) => {
-    let cartIndex = dbCart.findIndex(val => val.sku == sku);
-    let productIndex = dbProduct.findIndex(val => val.sku == sku);
-
-    dbCart[cartIndex].qty += 1;
-    dbProduct[productIndex].stock -= 1;
-    dbProduct[productIndex].stock <= '0' ? alert(`Sorry, the item out of stock 😌`) : dbProduct;
-
+    dbProduct[productIndex].stock  += 1;
+    dbCart[cartIndex].qty == '0' ? dbCart.splice(cartIndex, 1) : dbCart;
+                
     printCart()
     PrintData(dbProduct)
 };
 
-const multipleDelete = () => {
-    // 1. Confirmation, kl yes lanjut kl no berhenti
-    // let confirmation = confirm('Are you sure to delete these item?');
-
-    dbCart.forEach((val, idx) => {
-        if (document.getElementById(val.name).checked == true) {
-            
-                dbCart.splice(idx, 1)
-
-            
-            console.log(val);
+const increment = (sku) => {
+    dbCart.forEach(value => {
+        if (value.sku == sku) {
+            dbProduct.forEach(val => {
+                if (val.sku == value.sku) {
+                    val.stock--;
+                    value.qty++;
+                    
+                    val.stock <= '0' ? alert(`The item out of stock 😌`) : val.stock;
+                };
+                
+            })
         }
     })
-
-    printCart()    
+    printCart()
+    PrintData(dbProduct)
 };
 
+const resetCart = () => {
+    document.getElementById('cart-list').innerHTML = ``
+    dbCart.forEach((val) => {
+        dbProduct.forEach (value => {
+            if (val.sku == value.sku) {
+                value.stock += val.qty;
+            }
+        })
+    })
+    PrintData(dbProduct);
+    dbCart = [];
+};
 
-PrintData(dbProduct)
+const summary = () => {
+
+}
+
+
+// PrintData(dbProduct)
+
+// let selectedItem = document.getElementById('selector').checked;
+//         if (selectedItem == true) {
+//             dbCart.forEach((val, idx) => {
+//                 dbProduct.forEach(value => {
+//                     if (val.sku == value.sku) {
+//                         value.stock += val.qty;
+
+//                         dbCart.splice(idx, 1)
+//                         printCart()
+//                         PrintData(dbProduct)
+//                     }
+
+//                 })
+//             })
+//         }
