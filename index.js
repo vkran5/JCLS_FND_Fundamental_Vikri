@@ -303,20 +303,28 @@ const increment = (sku) => {
 
 const multipleDelete = () => {
     // 1. Confirmation, kl yes lanjut kl no berhenti
-    // let confirmation = confirm('Are you sure to delete these item?');
+    let confirmation = confirm('Are you sure to delete these item?');
 
-    dbCart.forEach((val, idx) => {
-        if (document.getElementById(val.name).checked == true) {
-            
-                dbCart.splice(idx, 1)
+    if (confirmation == true) {
+        let checked = [];
+        dbCart.forEach((val, idx) => {
+            if (document.getElementById(val.name).checked == true) {
+                checked.push(val);
+                // 2. Restore stock to dbProduct
+                let productIndex = dbProduct.findIndex(prodVal => prodVal.sku == val.sku)
+                dbProduct[productIndex].stock += val.qty;
+            }
+        });
+        // 3. Menghapus data dr cart
+        checked.forEach(val => {
+            let cartIndex = dbCart.findIndex(value => value.sku == val.sku);
+            dbCart.splice(cartIndex, 1);
+            console.log(cartIndex);
+        });
+    };
 
-            
-            console.log(val);
-        }
-    })
-
-    printCart()    
+    PrintData(dbProduct)
+    printCart()
 };
-
 
 PrintData(dbProduct)
