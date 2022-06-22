@@ -32,9 +32,9 @@ let dbProduct = [
 
 ];
 
-
-
 let dbCart = [];
+let dbCheckOut = [];
+let paymentDisplay = [];
 
 let getId = dbProduct.length == 0 ? 0 : dbProduct[dbProduct.length - 1].id;
 
@@ -66,7 +66,7 @@ const addProduct = () => {
         dbProduct.push(new Product(sku, productPreview, productName, category, parseInt(stock), parseInt(price)))
     } else if (category == "FnB") {
         dbProduct.push(new FnB(sku, productPreview, productName, category, parseInt(stock), parseInt(price), expDate))
-    }
+    };
 
     // Set value ke null
     form.elements["product"].value = null;
@@ -171,21 +171,20 @@ const PrintData = (array = dbProduct, sku) => {
         } else {
             return `
             <tr id='${val.sku}'>
-            <td>${idx + 1}</td>
-            <td>${val.sku}</td>
-            <td><img src="${val.preview}" style="width: 80px;"></td>
-            <td>${val.name}</td>
-            <td>${val.category}</td>
-            <td>${val.stock}</td>
-            <td>Rp. ${parseInt(val.price).toLocaleString('id')},-</td>
-            <td>${val.expDate ? val.expDate : " "}</td>
-            <td id='button'>
-                <button value="delete" onclick="deleteData('${val.sku}')">Delete</button>
-                <button value="edit" onclick="editHandler('${val.sku}')">Edit</button>
-                <button value="edit" id="buyHandler" onclick="buyHandler('${val.sku}')">Buy</button>
-            </td> 
-            
-        </tr>`
+                <td>${idx + 1}</td>
+                <td>${val.sku}</td>
+                <td><img src="${val.preview}" style="width: 80px;"></td>
+                <td>${val.name}</td>
+                <td>${val.category}</td>
+                <td>${val.stock}</td>
+                <td>Rp. ${parseInt(val.price).toLocaleString('id')},-</td>
+                <td>${val.expDate ? val.expDate : " "}</td>
+                <td id='button'>
+                    <button value="delete" onclick="deleteData('${val.sku}')">Delete</button>
+                    <button value="edit" onclick="editHandler('${val.sku}')">Edit</button>
+                    <button value="edit" id="buyHandler" onclick="buyHandler('${val.sku}')">Buy</button>
+                </td> 
+            </tr>`
         }
 
     }).join('');
@@ -223,7 +222,6 @@ const saveHandler = (sku) => {
     PrintData(dbProduct);
 };
 
-
 const buyHandler = (sku) => {
 
     let cartIndex = dbCart.findIndex((val) => val.sku == sku);
@@ -248,7 +246,7 @@ const buyHandler = (sku) => {
 };
 
 const printCart = () => {
-    document.getElementById('cart-list').innerHTML = dbCart.map((val, idx) => {
+    document.getElementById('cart-list').innerHTML = dbCart.map(val => {
         return `<tr>
                 <td>
                     <input id="${val.name}" type="checkbox" value="${val.name}">
@@ -283,7 +281,7 @@ const decrement = (sku) => {
 
     dbCart[cartIndex].qty -= 1;
     dbProduct[productIndex].stock += 1;
-    dbCart[cartIndex].qty == '0' ? dbCart.splice(cartIndex, 1) : dbProduct;
+    dbCart[cartIndex].qty == '0' ? dbCart.splice(cartIndex, 1) : dbCart;
 
     printCart();
     PrintData(dbProduct);
@@ -295,31 +293,29 @@ const increment = (sku) => {
 
     dbCart[cartIndex].qty += 1;
     dbProduct[productIndex].stock -= 1;
-    dbProduct[productIndex].stock <= '0' ? alert(`Sorry, the item out of stock 😌`) : dbProduct;
+    dbProduct[productIndex].stock <= '0' ? alert(`Sorry, the item out of stock 😌`) : dbCart;
 
     printCart()
     PrintData(dbProduct)
 };
 
 const multipleDelete = () => {
-    // 1. Confirmation, kl yes lanjut kl no berhenti
-    let confirmation = confirm('Are you sure to delete these item?');
+    let confirmation = confirm('Are you sure want to delete these items?');
 
     if (confirmation == true) {
         let checked = [];
-        dbCart.forEach((val, idx) => {
-            if (document.getElementById(val.name).checked == true) {
-                checked.push(val);
-                // 2. Restore stock to dbProduct
+        dbCart.forEach(val => {
+            if (document.getElementById(val.name).checked) {
+
                 let productIndex = dbProduct.findIndex(prodVal => prodVal.sku == val.sku)
                 dbProduct[productIndex].stock += val.qty;
+                checked.push(val);
             }
         });
-        // 3. Menghapus data dr cart
+
         checked.forEach(val => {
             let cartIndex = dbCart.findIndex(value => value.sku == val.sku);
             dbCart.splice(cartIndex, 1);
-            console.log(cartIndex);
         });
     };
 
@@ -327,4 +323,58 @@ const multipleDelete = () => {
     printCart()
 };
 
-PrintData(dbProduct)
+const checkOut = () => {
+    dbCart.forEach(val => {
+        if (document.getElementById(val.name).checked) {
+            dbCheckOut.push(val)
+        };
+    });
+
+    dbCheckOut.forEach(val => {
+        let cartIndex = dbCart.findIndex(data => data.sku == val.sku)
+        dbCart.splice(cartIndex, 1)
+    });
+
+    printCart()
+    printCheckOut();
+};
+
+const printCheckOut = () => {
+    document.getElementById('output-cart').innerHTML = dbCheckOut.map(val => {
+        return `
+        <tr>
+            <td> ${val.sku}</td>
+            <td> Rp.${(val.qty * val.price).toLocaleString('id')},-</td>
+        </tr>`
+    }).join('');
+
+    let payment = dbCheckOut.reduce((previous, current) => {
+        let currentValue = current.price * current.qty
+        return previous + currentValue;
+    }, 0);
+
+    document.getElementById("payment").innerHTML = `Rp.${payment.toLocaleString('id')},-`
+    paymentDisplay.push(payment);
+
+};
+
+const payment = () => {
+    let paymentInput = document.getElementById('paymentInput').value;
+    paymentDisplay.forEach(val => {
+        if (paymentInput > val) {
+            alert(`Terimakasih sudah berbelanja 😁 berikut kembalian anda Rp. ${paymentInput - paymentDisplay},-`);
+            paymentDisplay = [];
+
+            document.getElementById('summary').innerHTML = null;
+            document.getElementById('output-cart').innerHTML = null;
+            document.getElementById('payment').innerHTML = null;
+
+        } else if (paymentInput < val) {
+            document.getElementById('summary').innerHTML = `Mohon maaf pembelian gagal, pembayaran tidak mencukupi 😌`
+            paymentDisplay = paymentDisplay
+        };
+    })
+    document.getElementById('paymentInput').value = null;
+};
+
+PrintData(dbProduct);

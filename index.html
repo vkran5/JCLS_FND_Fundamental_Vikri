@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple Market</title>
     <style>
-        table, td, th, tr{
+        table,
+        td,
+        th,
+        tr {
             position: relative;
             border: 1px solid black;
             border-collapse: collapse;
@@ -14,17 +18,20 @@
         }
     </style>
 </head>
+
 <body>
     <div style="max-width: 75vw;">
         <fieldset>
-            <legend><h2>Add Product</h2></legend>
+            <legend>
+                <h2>Add Product</h2>
+            </legend>
             <form id="addProduct">
                 <input type="text" placeholder="Product Name" id="product">
                 <input type="text" placeholder="Product Preview" id="preview">
                 <select id="category" onchange="dateHandler(this.value)">
                     <option value="">Choose Category</option>
-                    <option value="General" >General</option>
-                    <option value="FnB" >FnB</option>
+                    <option value="General">General</option>
+                    <option value="FnB">FnB</option>
                 </select>
                 <input type="number" id="stock" placeholder="Stock">
                 <input type="number" id="price" placeholder="Price">
@@ -35,15 +42,17 @@
         </fieldset>
         <!-- Filter -->
         <fieldset>
-            <legend><h2>Filter Product</h2></legend>
+            <legend>
+                <h2>Filter Product</h2>
+            </legend>
             <form id="filteProduct">
                 <input type="text" id="sku" placeholder="SKU">
                 <input type="text" placeholder="Product Name" id="product">
                 <input type="number" id="price" placeholder="Price">
                 <select id="category" onchange="dateHandler(this.value)">
                     <option value="">Choose Category</option>
-                    <option value="General" >General</option>
-                    <option value="FnB" >FnB</option>
+                    <option value="General">General</option>
+                    <option value="FnB">FnB</option>
                 </select>
             </form>
             <br>
@@ -71,10 +80,13 @@
         <br>
         <!-- Cart -->
         <fieldset>
-            <button onclick="multipleDelete()">Multiple delete</button>
+            <button onclick="multipleDelete()">Delete Selected Item</button>
+            <button onclick="checkOut()">Checkout Selected Item</button>
             <br>
             <br>
-            <legend><h2>Cart List</h2></legend>
+            <legend>
+                <h2>Cart List</h2>
+            </legend>
             <table id="cart">
                 <thead>
                     <th>Select</th>
@@ -90,14 +102,48 @@
                 <tbody id="cart-list">
 
                 </tbody>
-    
+
                 <tbody id="data-list">
-    
+
                 </tbody>
             </table>
         </fieldset>
 
+        <fieldset>
+            <legend>
+                <h2>Check Out</h2>
+            </legend>
+            <table>
+                <thead>
+                    <td >SKU</td>
+                    <td >Sub. Total</td>
+                    <br>
+                </thead>
+                <tbody id="output-cart">
+                    
+                </tbody>
+            </table>
+            <br>
+            <table>
+                <thead>
+                    <tbody>
+                        <tr>
+                            <td>Total Pembayaran</td>
+                            <td id="payment">Rp. 0,-</td>
+                        </tr>
+                        <tr>
+                            <td>Uang Pembayaran</td>
+                            <td><input type="number" id="paymentInput"> <button onclick="payment()">Payment</button></td>
+                        </tr>
+                    </tbody>
+                </thead>
+            </table>
+            <h3 id="summary"></h3>
+        </fieldset>
+
+
     </div>
 </body>
 <script src="index.js"></script>
-</html>
+
+</html>``

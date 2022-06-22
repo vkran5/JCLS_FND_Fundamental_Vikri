@@ -322,21 +322,51 @@ const summary = () => {
 
 }
 
+const summaryHandler = () => {
+    let sum = dbCart.reduce ((previous, current)=> {
+        let currentValue = current.price * current.qty;
+        return previous + currentValue;
+    },0);
 
-// PrintData(dbProduct)
+    let ppn = sum * 0.11;
+    let totalPayment = sum + ppn;
 
-// let selectedItem = document.getElementById('selector').checked;
-//         if (selectedItem == true) {
-//             dbCart.forEach((val, idx) => {
-//                 dbProduct.forEach(value => {
-//                     if (val.sku == value.sku) {
-//                         value.stock += val.qty;
+    let totalSummery = `
+    <h3>Sub Total : Rp. ${sum.toLocaleString("id")}</h3>
+    <h3>PPN: Rp. ${ppn.toLocaleString("id")}</h3>
+    <h3>Total : Rp. ${totalPayment.toLocaleString("id")},-</h3>`;
 
-//                         dbCart.splice(idx, 1)
-//                         printCart()
-//                         PrintData(dbProduct)
-//                     }
+    let boughtList = dbCart.map(val => {
+        return ` <p>${val.sku} | ${val.name} | ${val.price} | ${val.qty} | ${val.price * val.qty}</p>`
+    }).join('');
+    
+    document.getElementById('summary').innerHTML = boughtList + totalSummery;
+};
 
-//                 })
-//             })
-//         }
+
+PrintData(dbProduct)
+
+const multipleDelete = () => {
+    // 1. Confirmation, kl yes lanjut kl no berhenti
+    let confirmation = confirm('Are you sure want to delete these items?');
+
+    if (confirmation == true) {
+        let checked = [];
+        dbCart.forEach(val => {
+            if (document.getElementById(val.name).checked == true) {
+                checked.push(val);
+                // 2. Restore stock to dbProduct
+                let productIndex = dbProduct.findIndex(prodVal => prodVal.sku == val.sku)
+                dbProduct[productIndex].stock += val.qty;
+            }
+        });
+        // 3. Menghapus data dr cart
+        checked.forEach(val => {
+            let cartIndex = dbCart.findIndex(value => value.sku == val.sku);
+            dbCart.splice(cartIndex, 1);
+        });
+    };
+
+    PrintData(dbProduct)
+    printCart()
+};
