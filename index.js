@@ -360,20 +360,22 @@ const printCheckOut = () => {
 
 const payment = () => {
     let paymentInput = document.getElementById('paymentInput').value;
+    
     paymentDisplay.forEach(val => {
         if (paymentInput > val) {
-            alert(`Terimakasih sudah berbelanja 😁 berikut kembalian anda Rp. ${paymentInput - paymentDisplay},-`);
-            paymentDisplay = [];
-
+            alert(`Thank you for coming 😁 here is your changes Rp. ${paymentInput - paymentDisplay},-`);
+            
             document.getElementById('summary').innerHTML = null;
             document.getElementById('output-cart').innerHTML = null;
-            document.getElementById('payment').innerHTML = null;
-
+            document.getElementById('payment').innerHTML = 'Rp. 0,-';
+            paymentDisplay = [];
+            dbCheckOut = [];
+            
         } else if (paymentInput < val) {
-            document.getElementById('summary').innerHTML = `Mohon maaf pembelian gagal, pembayaran tidak mencukupi 😌`
+            document.getElementById('summary').innerHTML = `Sorry payment failed, not enough amount of money 😌`
             paymentDisplay = paymentDisplay
         };
-    })
+    });
     document.getElementById('paymentInput').value = null;
 };
 
