@@ -40,6 +40,14 @@
             <br>
             <button onclick="addProduct()">Submit Product</button>
         </fieldset>
+        <!-- Customer -->
+        <fieldset>
+            <legend><h2>Customer</h2></legend>
+            
+            <input id="login" type="text" placeholder="user name">
+            <button onclick="login()">login</button>
+
+        </fieldset>
         <!-- Filter -->
         <fieldset>
             <legend>
@@ -56,7 +64,7 @@
                 </select>
             </form>
             <br>
-            <button onclick="filterProduct()">Search Product</button>
+            <button  onclick="filterProduct()">Search Product</button>
             <button onclick="PrintData(dbProduct)">Reset</button>
         </fieldset>
         <br>
@@ -108,7 +116,7 @@
                 </tbody>
             </table>
         </fieldset>
-
+        <!-- Checkout -->
         <fieldset>
             <legend>
                 <h2>Check Out</h2>
@@ -125,20 +133,35 @@
             </table>
             <br>
             <table>
-                <thead>
-                    <tbody>
-                        <tr>
-                            <td>Total Payment</td>
-                            <td id="payment">Rp. 0,-</td>
-                        </tr>
-                        <tr>
-                            <td>Input Payment</td>
-                            <td><input type="number" id="paymentInput"> <button onclick="payment()">Payment</button></td>
-                        </tr>
-                    </tbody>
-                </thead>
+                <tbody>
+                    <tr>
+                        <td>Total Payment</td>
+                        <td id="payment">Rp. 0,-</td>
+                    </tr>
+                    <tr>
+                        <td>Input Payment</td>
+                        <td><input type="number" id="paymentInput"> <button onclick="payment()">Payment</button></td>
+                    </tr>
+                </tbody>
             </table>
             <h3 id="summary"></h3>
+        </fieldset>
+
+        <fieldset>
+            <legend><h2>Report Transaction</h2></legend>
+            <table>
+                <thead>
+                    <th>No</th>
+                    <th>Date</th>
+                    <th>User</th>
+                    <th>Total Transaction</th>
+                </thead>
+                <tbody id="transaction">
+
+                </tbody>
+            </table>
+            <h4>Total omzet : </h4>
+            <h2 id="omzet"></h2>
         </fieldset>
 
 

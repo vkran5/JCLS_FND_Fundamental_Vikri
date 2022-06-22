@@ -35,6 +35,8 @@ let dbProduct = [
 let dbCart = [];
 let dbCheckOut = [];
 let paymentDisplay = [];
+let dbTransaction = [];
+let userData = '';
 
 let getId = dbProduct.length == 0 ? 0 : dbProduct[dbProduct.length - 1].id;
 
@@ -93,7 +95,6 @@ const filterProduct = () => {
         Boolean(sku) == true ? filterObj.sku = sku :
             Boolean(price) == true ? filterObj.price = price :
                 Boolean(category) == true ? filterObj.category = category :
-
                     console.log(filterObj);
 
     let result = [];
@@ -182,7 +183,7 @@ const PrintData = (array = dbProduct, sku) => {
                 <td id='button'>
                     <button value="delete" onclick="deleteData('${val.sku}')">Delete</button>
                     <button value="edit" onclick="editHandler('${val.sku}')">Edit</button>
-                    <button value="edit" id="buyHandler" onclick="buyHandler('${val.sku}')">Buy</button>
+                    <button value="edit" name="buyBtn" id="buyHandler" onclick="buyHandler('${val.sku}')">Buy</button>
                 </td> 
             </tr>`
         }
@@ -224,23 +225,29 @@ const saveHandler = (sku) => {
 
 const buyHandler = (sku) => {
 
-    let cartIndex = dbCart.findIndex((val) => val.sku == sku);
-    let productIndex = dbProduct.findIndex((val) => val.sku == sku);
-
-    if (cartIndex >= 0) {
-        dbCart[cartIndex].qty += 1;
-        dbCart[cartIndex].subTotal = dbCart[cartIndex].qty * dbCart[cartIndex].price;
-
-        dbProduct[productIndex].stock -= 1;
+    if (userData == '') {
+        alert('Sorry you are not logged in yet ⚠')
     } else {
+        let cartIndex = dbCart.findIndex((val) => val.sku == sku);
+        let productIndex = dbProduct.findIndex((val) => val.sku == sku);
 
-        dbCart.push(new Cart(dbProduct[productIndex].sku,
-            dbProduct[productIndex].preview,
-            dbProduct[productIndex].name,
-            dbProduct[productIndex].price, 1));
+        if (cartIndex >= 0) {
+            dbCart[cartIndex].qty += 1;
+            dbCart[cartIndex].subTotal = dbCart[cartIndex].qty * dbCart[cartIndex].price;
 
-        dbProduct[productIndex].stock -= 1;
+            dbProduct[productIndex].stock -= 1;
+        } else {
+
+            dbCart.push(new Cart(dbProduct[productIndex].sku,
+                dbProduct[productIndex].preview,
+                dbProduct[productIndex].name,
+                dbProduct[productIndex].price, 1));
+
+            dbProduct[productIndex].stock -= 1;
+        }
     }
+
+
     printCart()
     PrintData(dbProduct);
 };
@@ -360,23 +367,67 @@ const printCheckOut = () => {
 
 const payment = () => {
     let paymentInput = document.getElementById('paymentInput').value;
-    
+
     paymentDisplay.forEach(val => {
         if (paymentInput > val) {
             alert(`Thank you for coming 😁 here is your changes Rp. ${paymentInput - paymentDisplay},-`);
-            
+
+            dbTransaction.push({name: userData, transaction: val})
             document.getElementById('summary').innerHTML = null;
             document.getElementById('output-cart').innerHTML = null;
             document.getElementById('payment').innerHTML = 'Rp. 0,-';
             paymentDisplay = [];
             dbCheckOut = [];
-            
-        } else if (paymentInput < val) {
+
+        } else if (paymentInput == val) {
+            alert(`Thank you for coming, Enjoy your product 😁`);
+
+            dbTransaction.push({name: userData, transaction: val})
+            document.getElementById('summary').innerHTML = null;
+            document.getElementById('output-cart').innerHTML = null;
+            document.getElementById('payment').innerHTML = 'Rp. 0,-';
+            paymentDisplay = [];
+            dbCheckOut = [];
+
+        }else if (paymentInput < val) {
             document.getElementById('summary').innerHTML = `Sorry payment failed, not enough amount of money 😌`
             paymentDisplay = paymentDisplay
-        };
+        } 
     });
     document.getElementById('paymentInput').value = null;
+    transaction();
 };
+
+// Login
+const login = () => {
+    let username = document.getElementById('login').value;
+    userData += username;
+    document.getElementById('login').value = 'Logged in';
+    document.getElementById('login').disabled = true;
+};
+
+const transaction = () => {
+    document.getElementById('transaction').innerHTML = dbTransaction.map((val, idx) => {
+        return `
+            <tr>
+                <td>${idx+1}</td>
+                <td>${new Date().toLocaleDateString()}</td>
+                <td>${val.name}</td>
+                <td>${val.transaction}</td>
+            </tr>
+        `
+    }).join('')
+
+    let omzet = dbTransaction.reduce((previous, current)=> {
+        let currentVal = current.transaction;
+        return previous + currentVal;
+    }, 0)
+
+    document.getElementById('omzet').innerHTML = `Rp.${omzet.toLocaleString('id')},-`
+    
+    userData = ''
+    document.getElementById('login').value = null;
+    document.getElementById('login').disabled = false;
+}
 
 PrintData(dbProduct);
